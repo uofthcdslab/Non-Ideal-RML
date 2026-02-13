@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIMF Graph Generator</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+    </script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background-color: #f4f6f8; color: #333; }
+        h1 { color: #2c3e50; }
+        .container { display: flex; gap: 20px; height: 80vh; }
+        .input-pane { flex: 1; display: flex; flex-direction: column; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .preview-pane { flex: 2; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: auto; display: flex; justify-content: center; align-items: start; }
+        textarea { width: 100%; height: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 10px; font-family: monospace; font-size: 14px; resize: none; }
+        .controls { margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        button { background-color: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #2980b9; }
+        .legend { font-size: 0.85em; color: #666; margin-bottom: 10px; background: #eef2f7; padding: 10px; border-radius: 4px; }
+        #graphDiv { width: 100%; }
+    </style>
+</head>
+<body>
+
+    <h1>NIMF Graph Generator</h1>
+    
+    <div class="legend">
+        <strong>How to use:</strong> Enter one "Reasoning Chain" per line in the format: 
+        <code>AV -> RG -> UP -> IV -> KA</code>. <br>
+        The tool will automatically merge common nodes and draw the arrows pointing UP (Justification Flow).
+    </div>
+
+    <div class="container">
+        <div class="input-pane">
+            <div class="controls">
+                <strong>Input Chains</strong>
+                <button onclick="renderGraph()">Update Graph</button>
+            </div>
+            <textarea id="inputData" spellcheck="false">
+Robustness -> Robust to High Cardinality -> Feature Dependencies -> Select High-Perf Encoding -> Negligible Hyperparam Effects
+Robustness -> Robust to High Cardinality -> High Cardinal Features -> Select High-Perf Encoding -> Negligible Hyperparam Effects
+Robustness -> Robust to Shift -> Seasonal Variations -> New Eval Metric -> No Confounders
+Robustness -> Robust to Imbalance -> Target Confounders -> Mimic Real-World Eval -> No Influence of Other Ops
+</textarea>
+        </div>
+        <div class="preview-pane">
+            <div id="graphDiv" class="mermaid">
+                </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+
+        window.renderGraph = async function() {
+            const input = document.getElementById('inputData').value.trim();
+            const lines = input.split('\n');
+            
+            // Nodes registry to dedup IDs
+            const nodes = {};
+            const edges = [];
+            let nodeIdCounter = 0;
+
+            function getNodeId(text, layerIndex) {
+                const key = `${layerIndex}_${text}`; // Unique per text AND layer
+                if (!nodes[key]) {
+                    nodes[key] = { id: `N${nodeIdCounter++}`, text: text, layer: layerIndex };
+                }
+                return nodes[key].id;
+            }
+
+            // Parse lines
+            lines.forEach(line => {
+                if (!line.includes('->')) return;
+                const parts = line.split('->').map(s => s.trim());
+                if (parts.length !== 5) return; // Ensure strict 5 layers
+
+                // Connect KA(4) -> IV(3) -> UP(2) -> RG(1) -> AV(0)
+                // Array index: 0=AV, 1=RG, 2=UP, 3=IV, 4=KA
+                // Visual Flow: KA -> IV -> UP -> RG -> AV
+                
+                const av = getNodeId(parts[0], 0);
+                const rg = getNodeId(parts[1], 1);
+                const up = getNodeId(parts[2], 2);
+                const iv = getNodeId(parts[3], 3);
+                const ka = getNodeId(parts[4], 4);
+
+                edges.push(`${rg} --> ${av}`);
+                edges.push(`${up} --> ${rg}`);
+                edges.push(`${iv} --> ${up}`);
+                edges.push(`${ka} --> ${iv}`);
+            });
+
+            // Build Mermaid definition
+            let graphDef = 'graph BT\n'; // Bottom-to-Top orientation
+
+            // Define Nodes with specific styling per layer
+            // Layer 0: AV (Abstract Value) - Grey/White
+            // Layer 1: RG (Realized Goal) - Blueish
+            // Layer 2: UP (Undesirable Prop) - Orange/Redish
+            // Layer 3: IV (Intervention) - Greenish
+            // Layer 4: KA (Assumption) - Brownish
+            
+            Object.values(nodes).forEach(n => {
+                graphDef += `${n.id}["${n.text}"]\n`;
+                
+                // Style classes
+                if(n.layer === 0) graphDef += `class ${n.id} avNode\n`;
+                if(n.layer === 1) graphDef += `class ${n.id} rgNode\n`;
+                if(n.layer === 2) graphDef += `class ${n.id} upNode\n`;
+                if(n.layer === 3) graphDef += `class ${n.id} ivNode\n`;
+                if(n.layer === 4) graphDef += `class ${n.id} kaNode\n`;
+            });
+
+            // Unique Edges
+            const uniqueEdges = [...new Set(edges)];
+            uniqueEdges.forEach(e => graphDef += `${e}\n`);
+
+            // Styling Defs
+            graphDef += `
+            classDef avNode fill:#f9f9f9,stroke:#333,stroke-width:2px;
+            classDef rgNode fill:#dae8fc,stroke:#6c8ebf,stroke-width:2px;
+            classDef upNode fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;
+            classDef ivNode fill:#d5e8d4,stroke:#82b366,stroke-width:2px;
+            classDef kaNode fill:#f5f5f5,stroke:#b85450,stroke-width:2px,stroke-dasharray: 5 5;
+            `;
+
+            // Render
+            const element = document.getElementById('graphDiv');
+            element.removeAttribute('data-processed'); // Clear mermaid cache
+            element.innerHTML = graphDef;
+            
+            try {
+                await mermaid.run({ nodes: [element] });
+            } catch (e) {
+                console.error('Mermaid parsing error', e);
+                element.innerHTML = 'Syntax Error in Graph definition';
+            }
+        };
+
+        // Initial Render
+        setTimeout(renderGraph, 500);
+    </script>
+</body>
+</html>
