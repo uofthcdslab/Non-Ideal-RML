@@ -17,7 +17,7 @@
         
         /* Left Column */
         .input-panel { 
-            flex: 0 0 350px; 
+            flex: 0 0 320px; /* Slightly narrower to give more room to graph */
             background: white; 
             padding: 20px; 
             border-radius: 8px; 
@@ -62,17 +62,29 @@
         }
 
         .graph-toolbar {
-            padding: 10px; border-bottom: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; background: #fafafa;
+            padding: 10px; border-bottom: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; background: #fafafa; z-index: 10;
         }
         
         .zoom-btn { background: white; border: 1px solid #ccc; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; color: #333; }
         .zoom-btn:hover { background: #eee; }
 
+        /* The Scrollable Area */
         .graph-container {
-            flex: 1; overflow: auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 20px;
+            flex: 1; 
+            overflow: auto; /* Scrollbars trigger here */
+            background: #fff; 
+            padding: 20px;
+            /* Key fix: Align start so zooming doesn't push content off-screen left */
+            display: flex;
+            align-items: flex-start; 
+            justify-content: flex-start;
         }
 
-        #graphDiv { transform-origin: center top; transition: transform 0.2s ease-out; }
+        #graphDiv { 
+            /* Key fix: Origin top-left ensures it grows DOWN and RIGHT, triggering scrollbars */
+            transform-origin: 0 0; 
+            transition: transform 0.1s ease-out; 
+        }
 
     </style>
 </head>
@@ -133,32 +145,44 @@
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 
-        // Zoom Logic
-        // Changed default scale to 1.25 for bigger initial view
-        let currentScale = 1.25;
-        const scaleStep = 0.2;
+        // --- ZOOM SETTINGS ---
+        // Changed default to 2.5 (Massive start)
+        let currentScale = 2.5; 
+        const scaleStep = 0.25;
         const graphDiv = document.getElementById('graphDiv');
 
-        window.zoomIn = () => { currentScale += scaleStep; applyZoom(); };
-        window.zoomOut = () => { if (currentScale > 0.2) { currentScale -= scaleStep; applyZoom(); } };
+        window.zoomIn = () => { 
+            currentScale += scaleStep; 
+            applyZoom(); 
+        };
+
+        window.zoomOut = () => { 
+            // Removed arbitrary upper limit, just keeping > 0.1
+            if (currentScale > 0.2) { 
+                currentScale -= scaleStep; 
+                applyZoom(); 
+            }
+        };
         
-        // Reset now returns to 1.25 (bigger view)
-        window.resetZoom = () => { currentScale = 1.25; applyZoom(); };
+        window.resetZoom = () => { 
+            currentScale = 2.5; // Reset now goes back to big view
+            applyZoom(); 
+        };
 
         function applyZoom() {
+            // Because origin is 0 0, simple scaling works and pushes scrollbars
             graphDiv.style.transform = `scale(${currentScale})`;
-            // Add margin to prevent clipping when scaled up
-            graphDiv.style.margin = currentScale > 1 ? `${(currentScale - 1) * 200}px` : '0';
+            
+            // We also set width/height to help the browser recalculate scroll area if needed
+            // But usually transform-origin 0 0 is enough for overflow:auto
         }
 
         // --- Helper to Wrap Text ---
-        // Inserts <br/> every N chars to prevent super wide nodes
         function wrapText(text, maxLineLength = 20) {
             if (!text) return '';
             const words = text.split(' ');
             let currentLine = '';
             let result = '';
-
             words.forEach(word => {
                 if ((currentLine + word).length > maxLineLength) {
                     result += currentLine + '<br/>';
@@ -189,7 +213,6 @@
                 return id;
             }
 
-            // Parse Inputs - logic remains same
             const inputs = [
                 { id: 'input_UP', type: 'list', layer: 'UP' },
                 { id: 'input_UP_RG', type: 'conn', srcL: 'UP', tgtL: 'RG' },
@@ -202,7 +225,6 @@
                 const val = document.getElementById(inp.id).value;
                 if(!val) return;
                 const items = val.split(';');
-                
                 items.forEach(item => {
                     if(inp.type === 'list') {
                         addNode(item, inp.layer);
@@ -217,11 +239,9 @@
                 });
             });
 
-            // Build Mermaid
             let graphDef = 'graph BT\n'; 
             
             Object.values(nodes).forEach(n => {
-                // Apply Text Wrapping here
                 const wrappedLabel = wrapText(n.rawText, 25).replace(/"/g, "'"); 
                 graphDef += `${n.id}["${wrappedLabel}"]\n`;
                 graphDef += `class ${n.id} ${n.layer}Node\n`;
@@ -243,7 +263,8 @@
             
             try {
                 await mermaid.run({ nodes: [graphDiv] });
-                // Apply the default zoom (1.25) immediately after render
+                // We DO NOT reset zoom here, so if user updates graph, their zoom stays
+                // Just apply current scale to new graph
                 applyZoom();
             } catch (e) {
                 console.error(e);
