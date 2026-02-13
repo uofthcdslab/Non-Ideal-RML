@@ -3,140 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Non-Ideal RML Graph Generator</title>
+    <title>Non-Ideal RML Methodology Mapper</title>
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
     </script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; background-color: #f4f6f8; color: #333; }
-        h1 { color: #2c3e50; }
-        .container { display: flex; gap: 20px; height: 80vh; }
-        .input-pane { flex: 1; display: flex; flex-direction: column; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .preview-pane { flex: 2; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: auto; display: flex; justify-content: center; align-items: start; }
-        textarea { width: 100%; height: 100%; border: 1px solid #ddd; border-radius: 4px; padding: 10px; font-family: monospace; font-size: 14px; resize: none; }
-        .controls { margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        button { background-color: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: #2980b9; }
-        .legend { font-size: 0.85em; color: #666; margin-bottom: 10px; background: #eef2f7; padding: 10px; border-radius: 4px; }
-        #graphDiv { width: 100%; }
+        body { font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 1400px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; color: #333; }
+        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        
+        .main-layout { display: flex; gap: 30px; align-items: flex-start; }
+        
+        /* Left Column: Inputs */
+        .input-panel { flex: 1; min-width: 400px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #555; font-size: 0.9em; }
+        .input-group textarea { 
+            width: 100%; height: 80px; padding: 10px; 
+            border: 1px solid #e1e4e8; border-radius: 6px; 
+            font-family: monospace; font-size: 13px; resize: vertical; 
+            transition: border-color 0.2s;
+        }
+        .input-group textarea:focus { border-color: #3498db; outline: none; }
+        
+        button.update-btn { 
+            width: 100%; padding: 12px; background-color: #2c3e50; color: white; 
+            border: none; border-radius: 6px; font-weight: bold; cursor: pointer; 
+            font-size: 16px; transition: background 0.2s; margin-top: 10px;
+        }
+        button.update-btn:hover { background-color: #34495e; }
+
+        /* Right Column: Graph */
+        .graph-panel { flex: 2; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 800px; display: flex; justify-content: center; align-items: center; overflow: auto; }
+        
+        /* Legend */
+        .legend { margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; font-size: 0.8em; color: #666; }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+
     </style>
 </head>
 <body>
 
-    <h1>Non-Ideal RML Graph Generator</h1>
-    
-    <div class="legend">
-        <strong>How to use:</strong> Enter one "Reasoning Chain" per line in the format: 
-        <code>AV -> RG -> UP -> IV -> KA</code>. <br>
-        The tool will automatically merge common nodes and draw the arrows pointing UP (Justification Flow).
-    </div>
+    <h1>Non-Ideal RML Methodology Mapper</h1>
 
-    <div class="container">
-        <div class="input-pane">
-            <div class="controls">
-                <strong>Input Chains</strong>
-                <button onclick="renderGraph()">Update Graph</button>
+    <div class="main-layout">
+        <div class="input-panel">
+            
+            <div class="input-group">
+                <label for="input_UP">1. Undesirable Properties (UP) List</label>
+                <textarea id="input_UP" placeholder="Separate with semicolon (;)">feature dependencies; high-cardinal categorical features; incomplete operationalization of seasonal variations; incomplete operationalization of larger focus of ML system; target vairable confounders</textarea>
             </div>
-            <textarea id="inputData" spellcheck="false">
-Robustness -> Robust to High Cardinality -> Feature Dependencies -> Select High-Perf Encoding -> Negligible Hyperparam Effects
-Robustness -> Robust to High Cardinality -> High Cardinal Features -> Select High-Perf Encoding -> Negligible Hyperparam Effects
-Robustness -> Robust to Shift -> Seasonal Variations -> New Eval Metric -> No Confounders
-Robustness -> Robust to Imbalance -> Target Confounders -> Mimic Real-World Eval -> No Influence of Other Ops
-</textarea>
+
+            <div class="input-group">
+                <label for="input_UP_RG">2. Connections: UP -> RG (Realized Goals)</label>
+                <textarea id="input_UP_RG" placeholder="UP -> RG; UP -> RG">feature dependencies -> robust to high-cardinal data; high-cardinal categorical features->robust to high-cardinal data; high-cardinal categorical features->robust to distribution shift; incomplete operationalization of seasonal variations->robust to distribution shift; incomplete operationalization of seasonal variations->robust to class imbalance; incomplete operationalization of larger focus of ML system -> robust to distribution shift; target vairable confounders -> robust to class imbalance</textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="input_RG_AV">3. Connections: RG -> AV (Abstract Values)</label>
+                <textarea id="input_RG_AV" placeholder="RG -> AV; RG -> AV">robust to high-cardinal data->robustness; robust to distribution shift->robustness; robust to class imbalance->robustness</textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="input_IV_UP">4. Connections: IV (Interventions) -> UP</label>
+                <textarea id="input_IV_UP" placeholder="IV -> UP; IV -> UP">selecting highest-performing data encoding->high-cardinal categorical features; selecting highest performing model type -> high-cardinal categorical features; implementing a new evaluation metric for model tuning -> incomplete operationalization of seasonal variations; evaluation metric for model tuning ->target variable confounders; evaluation experiments to mimic real-world settings->incomplete operationalization of seasonal variations</textarea>
+            </div>
+
+            <div class="input-group">
+                <label for="input_KA_IV">5. Connections: KA (Known Assumptions) -> IV</label>
+                <textarea id="input_KA_IV" placeholder="KA -> IV; KA -> IV">negligble effects of model hyperparameters->selecting high-performing data encoding; negligble effects of model hyperparameters->selecting highest-performing model type; no influence of other operationalizations of target variable -> implementing a new evaluation metric for model tuning; no influence of other operationalizations of target variable->evaluation experiments to mimic real-world settings</textarea>
+            </div>
+
+            <button class="update-btn" onclick="renderGraph()">Update Graph</button>
+            
+            <div class="legend">
+                <div class="legend-item"><div class="dot" style="background:#f9f9f9; border:1px solid #333"></div>AV (Value)</div>
+                <div class="legend-item"><div class="dot" style="background:#dae8fc; border:1px solid #6c8ebf"></div>RG (Goal)</div>
+                <div class="legend-item"><div class="dot" style="background:#ffe6cc; border:1px solid #d79b00"></div>UP (Problem)</div>
+                <div class="legend-item"><div class="dot" style="background:#d5e8d4; border:1px solid #82b366"></div>IV (Action)</div>
+                <div class="legend-item"><div class="dot" style="background:#f5f5f5; border:1px dashed #b85450"></div>KA (Assumption)</div>
+            </div>
         </div>
-        <div class="preview-pane">
-            <div id="graphDiv" class="mermaid">
-                </div>
+
+        <div class="graph-panel">
+            <div id="graphDiv" class="mermaid"></div>
         </div>
     </div>
 
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 
-        window.renderGraph = async function() {
-            const input = document.getElementById('inputData').value.trim();
-            const lines = input.split('\n');
-            
-            // Nodes registry to dedup IDs
-            const nodes = {};
-            const edges = [];
-            let nodeIdCounter = 0;
+        // Helper to normalize text for IDs (remove spaces, special chars)
+        function cleanId(text) {
+            return 'node_' + text.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+        }
 
-            function getNodeId(text, layerIndex) {
-                const key = `${layerIndex}_${text}`; // Unique per text AND layer
-                if (!nodes[key]) {
-                    nodes[key] = { id: `N${nodeIdCounter++}`, text: text, layer: layerIndex };
+        window.renderGraph = async function() {
+            // Data storage
+            let nodes = {}; 
+            let edges = []; 
+
+            // Helper to add node if not exists
+            function addNode(text, layer) {
+                if (!text || text.trim() === '') return null;
+                const cleanText = text.trim();
+                const id = cleanId(cleanText);
+                
+                if (!nodes[id]) {
+                    nodes[id] = { id: id, text: cleanText, layer: layer };
                 }
-                return nodes[key].id;
+                return id;
             }
 
-            // Parse lines
-            lines.forEach(line => {
-                if (!line.includes('->')) return;
-                const parts = line.split('->').map(s => s.trim());
-                if (parts.length !== 5) return; // Ensure strict 5 layers
+            // 1. Parse UP List (Box 1)
+            const upRaw = document.getElementById('input_UP').value.split(';');
+            upRaw.forEach(t => addNode(t, 'UP'));
 
-                // Connect KA(4) -> IV(3) -> UP(2) -> RG(1) -> AV(0)
-                // Array index: 0=AV, 1=RG, 2=UP, 3=IV, 4=KA
-                // Visual Flow: KA -> IV -> UP -> RG -> AV
-                
-                const av = getNodeId(parts[0], 0);
-                const rg = getNodeId(parts[1], 1);
-                const up = getNodeId(parts[2], 2);
-                const iv = getNodeId(parts[3], 3);
-                const ka = getNodeId(parts[4], 4);
-
-                edges.push(`${rg} --> ${av}`);
-                edges.push(`${up} --> ${rg}`);
-                edges.push(`${iv} --> ${up}`);
-                edges.push(`${ka} --> ${iv}`);
+            // 2. Parse UP -> RG (Box 2)
+            const upRgRaw = document.getElementById('input_UP_RG').value.split(';');
+            upRgRaw.forEach(line => {
+                const parts = line.split('->');
+                if (parts.length === 2) {
+                    const src = addNode(parts[0], 'UP'); 
+                    const tgt = addNode(parts[1], 'RG'); 
+                    if(src && tgt) edges.push(`${src} --> ${tgt}`);
+                }
             });
 
-            // Build Mermaid definition
+            // 3. Parse RG -> AV (Box 3)
+            const rgAvRaw = document.getElementById('input_RG_AV').value.split(';');
+            rgAvRaw.forEach(line => {
+                const parts = line.split('->');
+                if (parts.length === 2) {
+                    const src = addNode(parts[0], 'RG'); 
+                    const tgt = addNode(parts[1], 'AV'); 
+                    if(src && tgt) edges.push(`${src} --> ${tgt}`);
+                }
+            });
+
+            // 4. Parse IV -> UP (Box 4)
+            const ivUpRaw = document.getElementById('input_IV_UP').value.split(';');
+            ivUpRaw.forEach(line => {
+                const parts = line.split('->');
+                if (parts.length === 2) {
+                    const src = addNode(parts[0], 'IV'); 
+                    const tgt = addNode(parts[1], 'UP'); 
+                    if(src && tgt) edges.push(`${src} --> ${tgt}`);
+                }
+            });
+
+            // 5. Parse KA -> IV (Box 5)
+            const kaIvRaw = document.getElementById('input_KA_IV').value.split(';');
+            kaIvRaw.forEach(line => {
+                const parts = line.split('->');
+                if (parts.length === 2) {
+                    const src = addNode(parts[0], 'KA'); 
+                    const tgt = addNode(parts[1], 'IV'); 
+                    if(src && tgt) edges.push(`${src} --> ${tgt}`);
+                }
+            });
+
+            // Build Mermaid Definition
             let graphDef = 'graph BT\n'; // Bottom-to-Top orientation
 
-            // Define Nodes with specific styling per layer
-            // Layer 0: AV (Abstract Value) - Grey/White
-            // Layer 1: RG (Realized Goal) - Blueish
-            // Layer 2: UP (Undesirable Prop) - Orange/Redish
-            // Layer 3: IV (Intervention) - Greenish
-            // Layer 4: KA (Assumption) - Brownish
-            
+            // Add Nodes
             Object.values(nodes).forEach(n => {
-                graphDef += `${n.id}["${n.text}"]\n`;
-                
-                // Style classes
-                if(n.layer === 0) graphDef += `class ${n.id} avNode\n`;
-                if(n.layer === 1) graphDef += `class ${n.id} rgNode\n`;
-                if(n.layer === 2) graphDef += `class ${n.id} upNode\n`;
-                if(n.layer === 3) graphDef += `class ${n.id} ivNode\n`;
-                if(n.layer === 4) graphDef += `class ${n.id} kaNode\n`;
+                const label = n.text.replace(/"/g, "'");
+                graphDef += `${n.id}["${label}"]\n`;
+                graphDef += `class ${n.id} ${n.layer}Node\n`;
             });
 
-            // Unique Edges
+            // Add Edges
             const uniqueEdges = [...new Set(edges)];
             uniqueEdges.forEach(e => graphDef += `${e}\n`);
 
-            // Styling Defs
+            // Styles
             graphDef += `
-            classDef avNode fill:#f9f9f9,stroke:#333,stroke-width:2px;
-            classDef rgNode fill:#dae8fc,stroke:#6c8ebf,stroke-width:2px;
-            classDef upNode fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;
-            classDef ivNode fill:#d5e8d4,stroke:#82b366,stroke-width:2px;
-            classDef kaNode fill:#f5f5f5,stroke:#b85450,stroke-width:2px,stroke-dasharray: 5 5;
+                classDef AVNode fill:#f9f9f9,stroke:#333,stroke-width:2px;
+                classDef RGNode fill:#dae8fc,stroke:#6c8ebf,stroke-width:2px;
+                classDef UPNode fill:#ffe6cc,stroke:#d79b00,stroke-width:2px;
+                classDef IVNode fill:#d5e8d4,stroke:#82b366,stroke-width:2px;
+                classDef KANode fill:#f5f5f5,stroke:#b85450,stroke-width:2px,stroke-dasharray: 5 5;
             `;
 
             // Render
             const element = document.getElementById('graphDiv');
-            element.removeAttribute('data-processed'); // Clear mermaid cache
+            element.removeAttribute('data-processed');
             element.innerHTML = graphDef;
             
             try {
                 await mermaid.run({ nodes: [element] });
             } catch (e) {
-                console.error('Mermaid parsing error', e);
-                element.innerHTML = 'Syntax Error in Graph definition';
+                console.error(e);
+                element.innerHTML = 'Error parsing graph data. Please check for special characters.';
             }
         };
 
