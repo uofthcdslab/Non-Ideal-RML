@@ -17,7 +17,7 @@
         
         /* Left Column */
         .input-panel { 
-            flex: 0 0 320px; /* Slightly narrower to give more room to graph */
+            flex: 0 0 320px; 
             background: white; 
             padding: 20px; 
             border-radius: 8px; 
@@ -71,17 +71,15 @@
         /* The Scrollable Area */
         .graph-container {
             flex: 1; 
-            overflow: auto; /* Scrollbars trigger here */
+            overflow: auto; 
             background: #fff; 
             padding: 20px;
-            /* Key fix: Align start so zooming doesn't push content off-screen left */
             display: flex;
             align-items: flex-start; 
             justify-content: flex-start;
         }
 
         #graphDiv { 
-            /* Key fix: Origin top-left ensures it grows DOWN and RIGHT, triggering scrollbars */
             transform-origin: 0 0; 
             transition: transform 0.1s ease-out; 
         }
@@ -108,24 +106,24 @@
             </div>
             <div class="input-group">
                 <label>4. IV (Interventions) -> UP</label>
-                <textarea id="input_IV_UP" placeholder="IV -> UP...">selecting highest-performing data encoding->high-cardinal categorical features; selecting highest performing model type -> high-cardinal categorical features; implementing a new evaluation metric for model tuning -> incomplete operationalization of seasonal variations; evaluation metric for model tuning ->target variable confounders; evaluation experiments to mimic real-world settings->incomplete operationalization of seasonal variations</textarea>
+                <textarea id="input_IV_UP" placeholder="IV -> UP...">selecting highest-performing data encoding->high-cardinal categorical features; selecting highest-performing model type -> high-cardinal categorical features; implementing a new evaluation metric for model tuning -> incomplete operationalization of seasonal variations; implementing a new evaluation metric for model tuning ->target variable confounders; evaluation experiments to mimic real-world settings->incomplete operationalization of seasonal variations</textarea>
             </div>
             <div class="input-group">
                 <label>5. KA (Known Assumptions) -> IV</label>
-                <textarea id="input_KA_IV" placeholder="KA -> IV...">negligble effects of model hyperparameters->selecting high-performing data encoding; negligble effects of model hyperparameters->selecting highest-performing model type; no influence of other operationalizations of target variable -> implementing a new evaluation metric for model tuning; no influence of other operationalizations of target variable->evaluation experiments to mimic real-world settings</textarea>
+                <textarea id="input_KA_IV" placeholder="KA -> IV...">negligble effects of model hyperparameters->selecting highest-performing data encoding; negligble effects of model hyperparameters->selecting highest-performing model type; no influence of other operationalizations of target variable -> implementing a new evaluation metric for model tuning; no influence of other operationalizations of target variable->evaluation experiments to mimic real-world settings</textarea>
             </div>
             <button class="update-btn" onclick="renderGraph()">Update Graph</button>
             <div class="legend">
                 <div class="legend-row">
-                    <div class="legend-item"><div class="dot" style="background:#f9f9f9; border:1px solid #333"></div>AV (Abstract Values)</div>
-                    <div class="legend-item"><div class="dot" style="background:#dae8fc; border:1px solid #6c8ebf"></div>RG (Realized Goals)</div>
+                    <div class="legend-item"><div class="dot" style="background:#f9f9f9; border:1px solid #333"></div>AV (Abstract Value)</div>
+                    <div class="legend-item"><div class="dot" style="background:#dae8fc; border:1px solid #6c8ebf"></div>RG (Realized Goal)</div>
                 </div>
                 <div class="legend-row">
-                    <div class="legend-item"><div class="dot" style="background:#ffe6cc; border:1px solid #d79b00"></div>UP (Undesirable Properties)</div>
-                    <div class="legend-item"><div class="dot" style="background:#d5e8d4; border:1px solid #82b366"></div>IV (Interventions)</div>
+                    <div class="legend-item"><div class="dot" style="background:#ffe6cc; border:1px solid #d79b00"></div>UP (Undesirable Property)</div>
+                    <div class="legend-item"><div class="dot" style="background:#d5e8d4; border:1px solid #82b366"></div>IV (Intervention)</div>
                 </div>
                 <div class="legend-row">
-                    <div class="legend-item"><div class="dot" style="background:#f5f5f5; border:1px dashed #b85450"></div>KA (Known Assumptions)</div>
+                    <div class="legend-item"><div class="dot" style="background:#f5f5f5; border:1px dashed #b85450"></div>KA (Known Assumption)</div>
                 </div>
             </div>
         </div>
@@ -146,7 +144,6 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 
         // --- ZOOM SETTINGS ---
-        // Changed default to 2.5 (Massive start)
         let currentScale = 2.5; 
         const scaleStep = 0.25;
         const graphDiv = document.getElementById('graphDiv');
@@ -157,7 +154,6 @@
         };
 
         window.zoomOut = () => { 
-            // Removed arbitrary upper limit, just keeping > 0.1
             if (currentScale > 0.2) { 
                 currentScale -= scaleStep; 
                 applyZoom(); 
@@ -165,16 +161,12 @@
         };
         
         window.resetZoom = () => { 
-            currentScale = 2.5; // Reset now goes back to big view
+            currentScale = 2.5; 
             applyZoom(); 
         };
 
         function applyZoom() {
-            // Because origin is 0 0, simple scaling works and pushes scrollbars
             graphDiv.style.transform = `scale(${currentScale})`;
-            
-            // We also set width/height to help the browser recalculate scroll area if needed
-            // But usually transform-origin 0 0 is enough for overflow:auto
         }
 
         // --- Helper to Wrap Text ---
@@ -263,8 +255,6 @@
             
             try {
                 await mermaid.run({ nodes: [graphDiv] });
-                // We DO NOT reset zoom here, so if user updates graph, their zoom stays
-                // Just apply current scale to new graph
                 applyZoom();
             } catch (e) {
                 console.error(e);
