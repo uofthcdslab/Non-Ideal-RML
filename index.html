@@ -13,35 +13,27 @@
         
         h1 { color: #2c3e50; text-align: center; margin: 0 0 20px 0; font-size: 1.8rem; }
         
-        /* Main Layout: Fixed Left, Flexible Right */
         .main-layout { display: flex; gap: 20px; height: 100%; overflow: hidden; }
         
-        /* --- Left Column: Inputs --- */
+        /* Left Column */
         .input-panel { 
-            flex: 0 0 350px; /* Fixed narrow width */
+            flex: 0 0 350px; 
             background: white; 
             padding: 20px; 
             border-radius: 8px; 
             box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
             display: flex; 
             flex-direction: column; 
-            overflow-y: auto; /* Scrollable if inputs get too long */
+            overflow-y: auto; 
         }
         
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-weight: 600; margin-bottom: 5px; color: #555; font-size: 0.85em; }
         
-        /* Compact Textareas */
         .input-group textarea { 
-            width: 100%; 
-            height: 45px; /* Smaller default height */
-            padding: 8px; 
-            border: 1px solid #e1e4e8; 
-            border-radius: 4px; 
-            font-family: monospace; 
-            font-size: 12px; 
-            resize: vertical; 
-            box-sizing: border-box;
+            width: 100%; height: 45px; padding: 8px; 
+            border: 1px solid #e1e4e8; border-radius: 4px; 
+            font-family: monospace; font-size: 12px; resize: vertical; box-sizing: border-box;
         }
         .input-group textarea:focus { border-color: #3498db; outline: none; }
         
@@ -57,50 +49,30 @@
         .legend-item { display: flex; align-items: center; gap: 6px; }
         .dot { width: 10px; height: 10px; border-radius: 50%; }
 
-        /* --- Right Column: Graph --- */
+        /* Right Column */
         .graph-panel { 
-            flex: 1; /* Takes all remaining space */
+            flex: 1; 
             background: white; 
             border-radius: 8px; 
             box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
             display: flex; 
             flex-direction: column; 
-            overflow: hidden; /* Important for zoom container */
+            overflow: hidden; 
             position: relative;
         }
 
-        /* Toolbar for Zoom */
         .graph-toolbar {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            background: #fafafa;
+            padding: 10px; border-bottom: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; background: #fafafa;
         }
         
-        .zoom-btn {
-            background: white; border: 1px solid #ccc; padding: 5px 12px;
-            border-radius: 4px; cursor: pointer; font-size: 14px; color: #333;
-        }
+        .zoom-btn { background: white; border: 1px solid #ccc; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; color: #333; }
         .zoom-btn:hover { background: #eee; }
 
-        /* Scrollable Container for Graph */
         .graph-container {
-            flex: 1;
-            overflow: auto; /* Scrollbars appear when zoomed in */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #fff;
-            padding: 20px;
+            flex: 1; overflow: auto; display: flex; justify-content: center; align-items: center; background: #fff; padding: 20px;
         }
 
-        /* The actual Graph Div */
-        #graphDiv {
-            transform-origin: center top;
-            transition: transform 0.2s ease-out;
-        }
+        #graphDiv { transform-origin: center top; transition: transform 0.2s ease-out; }
 
     </style>
 </head>
@@ -110,34 +82,27 @@
 
     <div class="main-layout">
         <div class="input-panel">
-            
             <div class="input-group">
                 <label>1. Undesirable Properties (UP)</label>
                 <textarea id="input_UP" placeholder="Item 1; Item 2...">feature dependencies; high-cardinal categorical features; incomplete operationalization of seasonal variations; incomplete operationalization of larger focus of ML system; target vairable confounders</textarea>
             </div>
-
             <div class="input-group">
                 <label>2. UP -> RG (Realized Goals)</label>
-                <textarea id="input_UP_RG" placeholder="UP -> RG; ...">feature dependencies -> robust to high-cardinal data; high-cardinal categorical features->robust to high-cardinal data; high-cardinal categorical features->robust to distribution shift; incomplete operationalization of seasonal variations->robust to distribution shift; incomplete operationalization of seasonal variations->robust to class imbalance; incomplete operationalization of larger focus of ML system -> robust to distribution shift; target vairable confounders -> robust to class imbalance</textarea>
+                <textarea id="input_UP_RG" placeholder="UP -> RG...">feature dependencies -> robust to high-cardinal data; high-cardinal categorical features->robust to high-cardinal data; high-cardinal categorical features->robust to distribution shift; incomplete operationalization of seasonal variations->robust to distribution shift; incomplete operationalization of seasonal variations->robust to class imbalance; incomplete operationalization of larger focus of ML system -> robust to distribution shift; target vairable confounders -> robust to class imbalance</textarea>
             </div>
-
             <div class="input-group">
                 <label>3. RG -> AV (Abstract Values)</label>
-                <textarea id="input_RG_AV" placeholder="RG -> AV; ...">robust to high-cardinal data->robustness; robust to distribution shift->robustness; robust to class imbalance->robustness</textarea>
+                <textarea id="input_RG_AV" placeholder="RG -> AV...">robust to high-cardinal data->robustness; robust to distribution shift->robustness; robust to class imbalance->robustness</textarea>
             </div>
-
             <div class="input-group">
                 <label>4. IV (Interventions) -> UP</label>
-                <textarea id="input_IV_UP" placeholder="IV -> UP; ...">selecting highest-performing data encoding->high-cardinal categorical features; selecting highest performing model type -> high-cardinal categorical features; implementing a new evaluation metric for model tuning -> incomplete operationalization of seasonal variations; evaluation metric for model tuning ->target variable confounders; evaluation experiments to mimic real-world settings->incomplete operationalization of seasonal variations</textarea>
+                <textarea id="input_IV_UP" placeholder="IV -> UP...">selecting highest-performing data encoding->high-cardinal categorical features; selecting highest performing model type -> high-cardinal categorical features; implementing a new evaluation metric for model tuning -> incomplete operationalization of seasonal variations; evaluation metric for model tuning ->target variable confounders; evaluation experiments to mimic real-world settings->incomplete operationalization of seasonal variations</textarea>
             </div>
-
             <div class="input-group">
                 <label>5. KA (Assumptions) -> IV</label>
-                <textarea id="input_KA_IV" placeholder="KA -> IV; ...">negligble effects of model hyperparameters->selecting high-performing data encoding; negligble effects of model hyperparameters->selecting highest-performing model type; no influence of other operationalizations of target variable -> implementing a new evaluation metric for model tuning; no influence of other operationalizations of target variable->evaluation experiments to mimic real-world settings</textarea>
+                <textarea id="input_KA_IV" placeholder="KA -> IV...">negligble effects of model hyperparameters->selecting high-performing data encoding; negligble effects of model hyperparameters->selecting highest-performing model type; no influence of other operationalizations of target variable -> implementing a new evaluation metric for model tuning; no influence of other operationalizations of target variable->evaluation experiments to mimic real-world settings</textarea>
             </div>
-
             <button class="update-btn" onclick="renderGraph()">Update Graph</button>
-            
             <div class="legend">
                 <div class="legend-row">
                     <div class="legend-item"><div class="dot" style="background:#f9f9f9; border:1px solid #333"></div>AV (Value)</div>
@@ -168,42 +133,40 @@
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 
-        // Zoom State
+        // Zoom Logic
         let currentScale = 1;
         const scaleStep = 0.2;
         const graphDiv = document.getElementById('graphDiv');
 
-        window.zoomIn = () => {
-            currentScale += scaleStep;
-            applyZoom();
-        };
-
-        window.zoomOut = () => {
-            if (currentScale > 0.2) {
-                currentScale -= scaleStep;
-                applyZoom();
-            }
-        };
-
-        window.resetZoom = () => {
-            currentScale = 1;
-            applyZoom();
-        };
+        window.zoomIn = () => { currentScale += scaleStep; applyZoom(); };
+        window.zoomOut = () => { if (currentScale > 0.2) { currentScale -= scaleStep; applyZoom(); } };
+        window.resetZoom = () => { currentScale = 1; applyZoom(); };
 
         function applyZoom() {
-            // We scale the mermaid div
             graphDiv.style.transform = `scale(${currentScale})`;
-            
-            // Adjust margins to allow scrolling to edges when zoomed in
-            // This is a simple fix to prevent clipping on zoom
-            if(currentScale > 1) {
-                graphDiv.style.margin = `${(currentScale - 1) * 100}px`;
-            } else {
-                graphDiv.style.margin = '0';
-            }
+            // Add margin to prevent clipping when scaled up
+            graphDiv.style.margin = currentScale > 1 ? `${(currentScale - 1) * 200}px` : '0';
         }
 
-        // --- Graph Rendering Logic ---
+        // --- Helper to Wrap Text ---
+        // Inserts <br/> every N chars to prevent super wide nodes
+        function wrapText(text, maxLineLength = 20) {
+            if (!text) return '';
+            const words = text.split(' ');
+            let currentLine = '';
+            let result = '';
+
+            words.forEach(word => {
+                if ((currentLine + word).length > maxLineLength) {
+                    result += currentLine + '<br/>';
+                    currentLine = word + ' ';
+                } else {
+                    currentLine += word + ' ';
+                }
+            });
+            result += currentLine.trim();
+            return result;
+        }
 
         function cleanId(text) {
             return 'node_' + text.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
@@ -218,64 +181,46 @@
                 const cleanText = text.trim();
                 const id = cleanId(cleanText);
                 if (!nodes[id]) {
-                    nodes[id] = { id: id, text: cleanText, layer: layer };
+                    nodes[id] = { id: id, rawText: cleanText, layer: layer };
                 }
                 return id;
             }
 
-            // 1. UP List
-            const upRaw = document.getElementById('input_UP').value.split(';');
-            upRaw.forEach(t => addNode(t, 'UP'));
+            // Parse Inputs
+            const inputs = [
+                { id: 'input_UP', type: 'list', layer: 'UP' },
+                { id: 'input_UP_RG', type: 'conn', srcL: 'UP', tgtL: 'RG' },
+                { id: 'input_RG_AV', type: 'conn', srcL: 'RG', tgtL: 'AV' },
+                { id: 'input_IV_UP', type: 'conn', srcL: 'IV', tgtL: 'UP' },
+                { id: 'input_KA_IV', type: 'conn', srcL: 'KA', tgtL: 'IV' }
+            ];
 
-            // 2. UP -> RG
-            const upRgRaw = document.getElementById('input_UP_RG').value.split(';');
-            upRgRaw.forEach(line => {
-                const parts = line.split('->');
-                if (parts.length === 2) {
-                    const src = addNode(parts[0], 'UP'); 
-                    const tgt = addNode(parts[1], 'RG'); 
-                    if(src && tgt) edges.push(`${src} --> ${tgt}`);
-                }
+            inputs.forEach(inp => {
+                const val = document.getElementById(inp.id).value;
+                if(!val) return;
+                const items = val.split(';');
+                
+                items.forEach(item => {
+                    if(inp.type === 'list') {
+                        addNode(item, inp.layer);
+                    } else {
+                        const parts = item.split('->');
+                        if(parts.length === 2) {
+                            const src = addNode(parts[0], inp.srcL);
+                            const tgt = addNode(parts[1], inp.tgtL);
+                            if(src && tgt) edges.push(`${src} --> ${tgt}`);
+                        }
+                    }
+                });
             });
 
-            // 3. RG -> AV
-            const rgAvRaw = document.getElementById('input_RG_AV').value.split(';');
-            rgAvRaw.forEach(line => {
-                const parts = line.split('->');
-                if (parts.length === 2) {
-                    const src = addNode(parts[0], 'RG'); 
-                    const tgt = addNode(parts[1], 'AV'); 
-                    if(src && tgt) edges.push(`${src} --> ${tgt}`);
-                }
-            });
-
-            // 4. IV -> UP
-            const ivUpRaw = document.getElementById('input_IV_UP').value.split(';');
-            ivUpRaw.forEach(line => {
-                const parts = line.split('->');
-                if (parts.length === 2) {
-                    const src = addNode(parts[0], 'IV'); 
-                    const tgt = addNode(parts[1], 'UP'); 
-                    if(src && tgt) edges.push(`${src} --> ${tgt}`);
-                }
-            });
-
-            // 5. KA -> IV
-            const kaIvRaw = document.getElementById('input_KA_IV').value.split(';');
-            kaIvRaw.forEach(line => {
-                const parts = line.split('->');
-                if (parts.length === 2) {
-                    const src = addNode(parts[0], 'KA'); 
-                    const tgt = addNode(parts[1], 'IV'); 
-                    if(src && tgt) edges.push(`${src} --> ${tgt}`);
-                }
-            });
-
+            // Build Mermaid
             let graphDef = 'graph BT\n'; 
-
+            
             Object.values(nodes).forEach(n => {
-                const label = n.text.replace(/"/g, "'");
-                graphDef += `${n.id}["${label}"]\n`;
+                // Apply Text Wrapping here
+                const wrappedLabel = wrapText(n.rawText, 25).replace(/"/g, "'"); 
+                graphDef += `${n.id}["${wrappedLabel}"]\n`;
                 graphDef += `class ${n.id} ${n.layer}Node\n`;
             });
 
@@ -295,11 +240,10 @@
             
             try {
                 await mermaid.run({ nodes: [graphDiv] });
-                // Reset zoom on new render
                 resetZoom();
             } catch (e) {
                 console.error(e);
-                graphDiv.innerHTML = 'Error parsing graph data. Check inputs.';
+                graphDiv.innerHTML = 'Error parsing graph. Check inputs.';
             }
         };
 
