@@ -111,21 +111,21 @@
                 <textarea id="input_IV_UP" placeholder="IV -> UP...">selecting highest-performing data encoding->high-cardinal categorical features; selecting highest performing model type -> high-cardinal categorical features; implementing a new evaluation metric for model tuning -> incomplete operationalization of seasonal variations; evaluation metric for model tuning ->target variable confounders; evaluation experiments to mimic real-world settings->incomplete operationalization of seasonal variations</textarea>
             </div>
             <div class="input-group">
-                <label>5. KA (Assumptions) -> IV</label>
+                <label>5. KA (Known Assumptions) -> IV</label>
                 <textarea id="input_KA_IV" placeholder="KA -> IV...">negligble effects of model hyperparameters->selecting high-performing data encoding; negligble effects of model hyperparameters->selecting highest-performing model type; no influence of other operationalizations of target variable -> implementing a new evaluation metric for model tuning; no influence of other operationalizations of target variable->evaluation experiments to mimic real-world settings</textarea>
             </div>
             <button class="update-btn" onclick="renderGraph()">Update Graph</button>
             <div class="legend">
                 <div class="legend-row">
-                    <div class="legend-item"><div class="dot" style="background:#f9f9f9; border:1px solid #333"></div>AV (Value)</div>
-                    <div class="legend-item"><div class="dot" style="background:#dae8fc; border:1px solid #6c8ebf"></div>RG (Goal)</div>
+                    <div class="legend-item"><div class="dot" style="background:#f9f9f9; border:1px solid #333"></div>AV (Abstract Values)</div>
+                    <div class="legend-item"><div class="dot" style="background:#dae8fc; border:1px solid #6c8ebf"></div>RG (Realized Goals)</div>
                 </div>
                 <div class="legend-row">
-                    <div class="legend-item"><div class="dot" style="background:#ffe6cc; border:1px solid #d79b00"></div>UP (Problem)</div>
-                    <div class="legend-item"><div class="dot" style="background:#d5e8d4; border:1px solid #82b366"></div>IV (Action)</div>
+                    <div class="legend-item"><div class="dot" style="background:#ffe6cc; border:1px solid #d79b00"></div>UP (Undesirable Properties)</div>
+                    <div class="legend-item"><div class="dot" style="background:#d5e8d4; border:1px solid #82b366"></div>IV (Interventions)</div>
                 </div>
                 <div class="legend-row">
-                    <div class="legend-item"><div class="dot" style="background:#f5f5f5; border:1px dashed #b85450"></div>KA (Assumption)</div>
+                    <div class="legend-item"><div class="dot" style="background:#f5f5f5; border:1px dashed #b85450"></div>KA (Known Assumptions)</div>
                 </div>
             </div>
         </div>
