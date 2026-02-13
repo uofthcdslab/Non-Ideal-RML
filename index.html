@@ -84,11 +84,11 @@
         <div class="input-panel">
             <div class="input-group">
                 <label>1. Undesirable Properties (UP)</label>
-                <textarea id="input_UP" placeholder="Item 1; Item 2...">feature dependencies; high-cardinal categorical features; incomplete operationalization of seasonal variations; incomplete operationalization of larger focus of ML system; target vairable confounders</textarea>
+                <textarea id="input_UP" placeholder="Item 1; Item 2...">feature dependencies; high-cardinal categorical features; incomplete operationalization of seasonal variations; incomplete operationalization of larger focus of ML system; target variable confounders</textarea>
             </div>
             <div class="input-group">
                 <label>2. UP -> RG (Realized Goals)</label>
-                <textarea id="input_UP_RG" placeholder="UP -> RG...">feature dependencies -> robust to high-cardinal data; high-cardinal categorical features->robust to high-cardinal data; high-cardinal categorical features->robust to distribution shift; incomplete operationalization of seasonal variations->robust to distribution shift; incomplete operationalization of seasonal variations->robust to class imbalance; incomplete operationalization of larger focus of ML system -> robust to distribution shift; target vairable confounders -> robust to class imbalance</textarea>
+                <textarea id="input_UP_RG" placeholder="UP -> RG...">feature dependencies -> robust to high-cardinal data; high-cardinal categorical features->robust to high-cardinal data; high-cardinal categorical features->robust to distribution shift; incomplete operationalization of seasonal variations->robust to distribution shift; incomplete operationalization of seasonal variations->robust to class imbalance; incomplete operationalization of larger focus of ML system -> robust to distribution shift; target variable confounders -> robust to class imbalance</textarea>
             </div>
             <div class="input-group">
                 <label>3. RG -> AV (Abstract Values)</label>
@@ -134,13 +134,16 @@
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 
         // Zoom Logic
-        let currentScale = 1;
+        // Changed default scale to 1.25 for bigger initial view
+        let currentScale = 1.25;
         const scaleStep = 0.2;
         const graphDiv = document.getElementById('graphDiv');
 
         window.zoomIn = () => { currentScale += scaleStep; applyZoom(); };
         window.zoomOut = () => { if (currentScale > 0.2) { currentScale -= scaleStep; applyZoom(); } };
-        window.resetZoom = () => { currentScale = 1; applyZoom(); };
+        
+        // Reset now returns to 1.25 (bigger view)
+        window.resetZoom = () => { currentScale = 1.25; applyZoom(); };
 
         function applyZoom() {
             graphDiv.style.transform = `scale(${currentScale})`;
@@ -186,7 +189,7 @@
                 return id;
             }
 
-            // Parse Inputs
+            // Parse Inputs - logic remains same
             const inputs = [
                 { id: 'input_UP', type: 'list', layer: 'UP' },
                 { id: 'input_UP_RG', type: 'conn', srcL: 'UP', tgtL: 'RG' },
@@ -240,7 +243,8 @@
             
             try {
                 await mermaid.run({ nodes: [graphDiv] });
-                resetZoom();
+                // Apply the default zoom (1.25) immediately after render
+                applyZoom();
             } catch (e) {
                 console.error(e);
                 graphDiv.innerHTML = 'Error parsing graph. Check inputs.';
