@@ -6,41 +6,101 @@
     <title>Non-Ideal RML Methodology Mapper</title>
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
-        mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
     </script>
     <style>
-        body { font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 1400px; margin: 0 auto; padding: 20px; background-color: #f8f9fa; color: #333; }
-        h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; }
+        body { font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif; max-width: 100%; margin: 0; padding: 20px; background-color: #f8f9fa; color: #333; height: 100vh; box-sizing: border-box; display: flex; flex-direction: column; }
         
-        .main-layout { display: flex; gap: 30px; align-items: flex-start; }
+        h1 { color: #2c3e50; text-align: center; margin: 0 0 20px 0; font-size: 1.8rem; }
         
-        /* Left Column: Inputs */
-        .input-panel { flex: 1; min-width: 400px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        /* Main Layout: Fixed Left, Flexible Right */
+        .main-layout { display: flex; gap: 20px; height: 100%; overflow: hidden; }
         
-        .input-group { margin-bottom: 20px; }
-        .input-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #555; font-size: 0.9em; }
+        /* --- Left Column: Inputs --- */
+        .input-panel { 
+            flex: 0 0 350px; /* Fixed narrow width */
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+            display: flex; 
+            flex-direction: column; 
+            overflow-y: auto; /* Scrollable if inputs get too long */
+        }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-weight: 600; margin-bottom: 5px; color: #555; font-size: 0.85em; }
+        
+        /* Compact Textareas */
         .input-group textarea { 
-            width: 100%; height: 80px; padding: 10px; 
-            border: 1px solid #e1e4e8; border-radius: 6px; 
-            font-family: monospace; font-size: 13px; resize: vertical; 
-            transition: border-color 0.2s;
+            width: 100%; 
+            height: 45px; /* Smaller default height */
+            padding: 8px; 
+            border: 1px solid #e1e4e8; 
+            border-radius: 4px; 
+            font-family: monospace; 
+            font-size: 12px; 
+            resize: vertical; 
+            box-sizing: border-box;
         }
         .input-group textarea:focus { border-color: #3498db; outline: none; }
         
         button.update-btn { 
-            width: 100%; padding: 12px; background-color: #2c3e50; color: white; 
-            border: none; border-radius: 6px; font-weight: bold; cursor: pointer; 
-            font-size: 16px; transition: background 0.2s; margin-top: 10px;
+            width: 100%; padding: 10px; background-color: #2c3e50; color: white; 
+            border: none; border-radius: 4px; font-weight: bold; cursor: pointer; 
+            transition: background 0.2s; margin-top: 5px;
         }
         button.update-btn:hover { background-color: #34495e; }
 
-        /* Right Column: Graph */
-        .graph-panel { flex: 2; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 800px; display: flex; justify-content: center; align-items: center; overflow: auto; }
+        .legend { margin-top: auto; padding-top: 15px; border-top: 1px solid #eee; }
+        .legend-row { display: flex; gap: 10px; flex-wrap: wrap; font-size: 0.75em; color: #666; margin-bottom: 5px;}
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        /* --- Right Column: Graph --- */
+        .graph-panel { 
+            flex: 1; /* Takes all remaining space */
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; /* Important for zoom container */
+            position: relative;
+        }
+
+        /* Toolbar for Zoom */
+        .graph-toolbar {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            background: #fafafa;
+        }
         
-        /* Legend */
-        .legend { margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; font-size: 0.8em; color: #666; }
-        .legend-item { display: flex; align-items: center; gap: 5px; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .zoom-btn {
+            background: white; border: 1px solid #ccc; padding: 5px 12px;
+            border-radius: 4px; cursor: pointer; font-size: 14px; color: #333;
+        }
+        .zoom-btn:hover { background: #eee; }
+
+        /* Scrollable Container for Graph */
+        .graph-container {
+            flex: 1;
+            overflow: auto; /* Scrollbars appear when zoomed in */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff;
+            padding: 20px;
+        }
+
+        /* The actual Graph Div */
+        #graphDiv {
+            transform-origin: center top;
+            transition: transform 0.2s ease-out;
+        }
 
     </style>
 </head>
@@ -52,76 +112,122 @@
         <div class="input-panel">
             
             <div class="input-group">
-                <label for="input_UP">1. Undesirable Properties (UP) List</label>
-                <textarea id="input_UP" placeholder="Separate with semicolon (;)">feature dependencies; high-cardinal categorical features; incomplete operationalization of seasonal variations; incomplete operationalization of larger focus of ML system; target vairable confounders</textarea>
+                <label>1. Undesirable Properties (UP)</label>
+                <textarea id="input_UP" placeholder="Item 1; Item 2...">feature dependencies; high-cardinal categorical features; incomplete operationalization of seasonal variations; incomplete operationalization of larger focus of ML system; target vairable confounders</textarea>
             </div>
 
             <div class="input-group">
-                <label for="input_UP_RG">2. Connections: UP -> RG (Realized Goals)</label>
-                <textarea id="input_UP_RG" placeholder="UP -> RG; UP -> RG">feature dependencies -> robust to high-cardinal data; high-cardinal categorical features->robust to high-cardinal data; high-cardinal categorical features->robust to distribution shift; incomplete operationalization of seasonal variations->robust to distribution shift; incomplete operationalization of seasonal variations->robust to class imbalance; incomplete operationalization of larger focus of ML system -> robust to distribution shift; target vairable confounders -> robust to class imbalance</textarea>
+                <label>2. UP -> RG (Realized Goals)</label>
+                <textarea id="input_UP_RG" placeholder="UP -> RG; ...">feature dependencies -> robust to high-cardinal data; high-cardinal categorical features->robust to high-cardinal data; high-cardinal categorical features->robust to distribution shift; incomplete operationalization of seasonal variations->robust to distribution shift; incomplete operationalization of seasonal variations->robust to class imbalance; incomplete operationalization of larger focus of ML system -> robust to distribution shift; target vairable confounders -> robust to class imbalance</textarea>
             </div>
 
             <div class="input-group">
-                <label for="input_RG_AV">3. Connections: RG -> AV (Abstract Values)</label>
-                <textarea id="input_RG_AV" placeholder="RG -> AV; RG -> AV">robust to high-cardinal data->robustness; robust to distribution shift->robustness; robust to class imbalance->robustness</textarea>
+                <label>3. RG -> AV (Abstract Values)</label>
+                <textarea id="input_RG_AV" placeholder="RG -> AV; ...">robust to high-cardinal data->robustness; robust to distribution shift->robustness; robust to class imbalance->robustness</textarea>
             </div>
 
             <div class="input-group">
-                <label for="input_IV_UP">4. Connections: IV (Interventions) -> UP</label>
-                <textarea id="input_IV_UP" placeholder="IV -> UP; IV -> UP">selecting highest-performing data encoding->high-cardinal categorical features; selecting highest performing model type -> high-cardinal categorical features; implementing a new evaluation metric for model tuning -> incomplete operationalization of seasonal variations; evaluation metric for model tuning ->target variable confounders; evaluation experiments to mimic real-world settings->incomplete operationalization of seasonal variations</textarea>
+                <label>4. IV (Interventions) -> UP</label>
+                <textarea id="input_IV_UP" placeholder="IV -> UP; ...">selecting highest-performing data encoding->high-cardinal categorical features; selecting highest performing model type -> high-cardinal categorical features; implementing a new evaluation metric for model tuning -> incomplete operationalization of seasonal variations; evaluation metric for model tuning ->target variable confounders; evaluation experiments to mimic real-world settings->incomplete operationalization of seasonal variations</textarea>
             </div>
 
             <div class="input-group">
-                <label for="input_KA_IV">5. Connections: KA (Known Assumptions) -> IV</label>
-                <textarea id="input_KA_IV" placeholder="KA -> IV; KA -> IV">negligble effects of model hyperparameters->selecting high-performing data encoding; negligble effects of model hyperparameters->selecting highest-performing model type; no influence of other operationalizations of target variable -> implementing a new evaluation metric for model tuning; no influence of other operationalizations of target variable->evaluation experiments to mimic real-world settings</textarea>
+                <label>5. KA (Assumptions) -> IV</label>
+                <textarea id="input_KA_IV" placeholder="KA -> IV; ...">negligble effects of model hyperparameters->selecting high-performing data encoding; negligble effects of model hyperparameters->selecting highest-performing model type; no influence of other operationalizations of target variable -> implementing a new evaluation metric for model tuning; no influence of other operationalizations of target variable->evaluation experiments to mimic real-world settings</textarea>
             </div>
 
             <button class="update-btn" onclick="renderGraph()">Update Graph</button>
             
             <div class="legend">
-                <div class="legend-item"><div class="dot" style="background:#f9f9f9; border:1px solid #333"></div>AV (Value)</div>
-                <div class="legend-item"><div class="dot" style="background:#dae8fc; border:1px solid #6c8ebf"></div>RG (Goal)</div>
-                <div class="legend-item"><div class="dot" style="background:#ffe6cc; border:1px solid #d79b00"></div>UP (Problem)</div>
-                <div class="legend-item"><div class="dot" style="background:#d5e8d4; border:1px solid #82b366"></div>IV (Action)</div>
-                <div class="legend-item"><div class="dot" style="background:#f5f5f5; border:1px dashed #b85450"></div>KA (Assumption)</div>
+                <div class="legend-row">
+                    <div class="legend-item"><div class="dot" style="background:#f9f9f9; border:1px solid #333"></div>AV (Value)</div>
+                    <div class="legend-item"><div class="dot" style="background:#dae8fc; border:1px solid #6c8ebf"></div>RG (Goal)</div>
+                </div>
+                <div class="legend-row">
+                    <div class="legend-item"><div class="dot" style="background:#ffe6cc; border:1px solid #d79b00"></div>UP (Problem)</div>
+                    <div class="legend-item"><div class="dot" style="background:#d5e8d4; border:1px solid #82b366"></div>IV (Action)</div>
+                </div>
+                <div class="legend-row">
+                    <div class="legend-item"><div class="dot" style="background:#f5f5f5; border:1px dashed #b85450"></div>KA (Assumption)</div>
+                </div>
             </div>
         </div>
 
         <div class="graph-panel">
-            <div id="graphDiv" class="mermaid"></div>
+            <div class="graph-toolbar">
+                <button class="zoom-btn" onclick="zoomIn()">Zoom In (+)</button>
+                <button class="zoom-btn" onclick="zoomOut()">Zoom Out (-)</button>
+                <button class="zoom-btn" onclick="resetZoom()">Reset</button>
+            </div>
+            <div class="graph-container">
+                <div id="graphDiv" class="mermaid"></div>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 
-        // Helper to normalize text for IDs (remove spaces, special chars)
+        // Zoom State
+        let currentScale = 1;
+        const scaleStep = 0.2;
+        const graphDiv = document.getElementById('graphDiv');
+
+        window.zoomIn = () => {
+            currentScale += scaleStep;
+            applyZoom();
+        };
+
+        window.zoomOut = () => {
+            if (currentScale > 0.2) {
+                currentScale -= scaleStep;
+                applyZoom();
+            }
+        };
+
+        window.resetZoom = () => {
+            currentScale = 1;
+            applyZoom();
+        };
+
+        function applyZoom() {
+            // We scale the mermaid div
+            graphDiv.style.transform = `scale(${currentScale})`;
+            
+            // Adjust margins to allow scrolling to edges when zoomed in
+            // This is a simple fix to prevent clipping on zoom
+            if(currentScale > 1) {
+                graphDiv.style.margin = `${(currentScale - 1) * 100}px`;
+            } else {
+                graphDiv.style.margin = '0';
+            }
+        }
+
+        // --- Graph Rendering Logic ---
+
         function cleanId(text) {
             return 'node_' + text.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
         }
 
         window.renderGraph = async function() {
-            // Data storage
             let nodes = {}; 
             let edges = []; 
 
-            // Helper to add node if not exists
             function addNode(text, layer) {
                 if (!text || text.trim() === '') return null;
                 const cleanText = text.trim();
                 const id = cleanId(cleanText);
-                
                 if (!nodes[id]) {
                     nodes[id] = { id: id, text: cleanText, layer: layer };
                 }
                 return id;
             }
 
-            // 1. Parse UP List (Box 1)
+            // 1. UP List
             const upRaw = document.getElementById('input_UP').value.split(';');
             upRaw.forEach(t => addNode(t, 'UP'));
 
-            // 2. Parse UP -> RG (Box 2)
+            // 2. UP -> RG
             const upRgRaw = document.getElementById('input_UP_RG').value.split(';');
             upRgRaw.forEach(line => {
                 const parts = line.split('->');
@@ -132,7 +238,7 @@
                 }
             });
 
-            // 3. Parse RG -> AV (Box 3)
+            // 3. RG -> AV
             const rgAvRaw = document.getElementById('input_RG_AV').value.split(';');
             rgAvRaw.forEach(line => {
                 const parts = line.split('->');
@@ -143,7 +249,7 @@
                 }
             });
 
-            // 4. Parse IV -> UP (Box 4)
+            // 4. IV -> UP
             const ivUpRaw = document.getElementById('input_IV_UP').value.split(';');
             ivUpRaw.forEach(line => {
                 const parts = line.split('->');
@@ -154,7 +260,7 @@
                 }
             });
 
-            // 5. Parse KA -> IV (Box 5)
+            // 5. KA -> IV
             const kaIvRaw = document.getElementById('input_KA_IV').value.split(';');
             kaIvRaw.forEach(line => {
                 const parts = line.split('->');
@@ -165,21 +271,17 @@
                 }
             });
 
-            // Build Mermaid Definition
-            let graphDef = 'graph BT\n'; // Bottom-to-Top orientation
+            let graphDef = 'graph BT\n'; 
 
-            // Add Nodes
             Object.values(nodes).forEach(n => {
                 const label = n.text.replace(/"/g, "'");
                 graphDef += `${n.id}["${label}"]\n`;
                 graphDef += `class ${n.id} ${n.layer}Node\n`;
             });
 
-            // Add Edges
             const uniqueEdges = [...new Set(edges)];
             uniqueEdges.forEach(e => graphDef += `${e}\n`);
 
-            // Styles
             graphDef += `
                 classDef AVNode fill:#f9f9f9,stroke:#333,stroke-width:2px;
                 classDef RGNode fill:#dae8fc,stroke:#6c8ebf,stroke-width:2px;
@@ -188,20 +290,19 @@
                 classDef KANode fill:#f5f5f5,stroke:#b85450,stroke-width:2px,stroke-dasharray: 5 5;
             `;
 
-            // Render
-            const element = document.getElementById('graphDiv');
-            element.removeAttribute('data-processed');
-            element.innerHTML = graphDef;
+            graphDiv.removeAttribute('data-processed');
+            graphDiv.innerHTML = graphDef;
             
             try {
-                await mermaid.run({ nodes: [element] });
+                await mermaid.run({ nodes: [graphDiv] });
+                // Reset zoom on new render
+                resetZoom();
             } catch (e) {
                 console.error(e);
-                element.innerHTML = 'Error parsing graph data. Please check for special characters.';
+                graphDiv.innerHTML = 'Error parsing graph data. Check inputs.';
             }
         };
 
-        // Initial Render
         setTimeout(renderGraph, 500);
     </script>
 </body>
