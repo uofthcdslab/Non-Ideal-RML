@@ -35,7 +35,7 @@ This repository contains tools and guides to help you apply our framework to you
 
 1.  **Visualizer Tool:** A browser-based interface to map your dependencies and generate a directed graph of your methodological logic.
 
-    👉 **Launch Tool:** `https://[YOUR-USERNAME].github.io/[REPO-NAME]/`
+    👉 **Launch Tool:** `https://uofthcdslab.github.io/Non-Ideal-RML/`
 
 2.  **Guidelines:** A detailed explanation of how to identify different components of the framework and map them in the visualizer tool.
 
