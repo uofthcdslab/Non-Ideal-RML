@@ -1,7 +1,7 @@
 Non-Ideal Methodological Framework for Responsible ML
 =====================================================
 
-.. image:: framework.png
+.. image:: rai-map-complete.png
    :alt: Framework Illustration
    :align: center
    :width: 800px
