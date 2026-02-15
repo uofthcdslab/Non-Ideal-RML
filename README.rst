@@ -1,7 +1,7 @@
 Non-Ideal Methodological Framework for Responsible ML
 =====================================================
 
-|DOI| |Citation|
+|DOI| |Citation| |Visualizer|
 
 This framework provides a structured approach to bridge the gap between abstract ethical values and concrete technical interventions in Machine Learning.
 
@@ -71,3 +71,7 @@ Mothilal, R. K., Guha, S., & Ahmed, S. I. (2024). Towards a Non-Ideal Methodolog
 .. |Citation| image:: https://img.shields.io/badge/Citation-CHI%2724-blue
    :target: https://dl.acm.org/doi/full/10.1145/3613904.3642501
    :alt: Citation
+
+.. |Visualizer| image:: https://img.shields.io/badge/Launch-Visualizer_Tool-7b2cbf?style=flat&logo=github
+   :target: https://[YOUR-USERNAME].github.io/[REPO-NAME]/
+   :alt: Launch Visualizer
