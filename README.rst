@@ -64,8 +64,8 @@ If you use this framework in your research, please cite the following paper:
 **Text:**
 Mothilal, R. K., Guha, S., & Ahmed, S. I. (2024). Towards a Non-Ideal Methodological Framework for Responsible ML. *Proceedings of the 2024 CHI Conference on Human Factors in Computing Systems (CHI '24)*. https://doi.org/10.1145/3613904.3642501
 
-.. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.18651268.svg
-   :target: https://doi.org/10.5281/zenodo.18651268
+.. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.18652299.svg
+   :target: https://doi.org/10.5281/zenodo.18652299
    :alt: DOI
 
 .. |Citation| image:: https://img.shields.io/badge/Citation-CHI%2724-blue
