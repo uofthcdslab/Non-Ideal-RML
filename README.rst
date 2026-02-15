@@ -4,6 +4,7 @@ Non-Ideal Methodological Framework for Responsible ML
 |DOI| |Citation|
 
 This framework provides a structured approach to bridge the gap between abstract ethical values and concrete technical interventions in Machine Learning.
+
 .. image:: rai-map-complete.png
    :alt: Framework Illustration
    :align: center
