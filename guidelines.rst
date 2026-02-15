@@ -70,6 +70,8 @@ Example Mapping
 
 Below is a complete example of a mapping for the value **Robustness**, illustrating how the layers connect:
 
+**Source:** Adapted from the diagnosis of concerns in *Kulkarni et al. (2022), "Functional Regularization for Reinforcement Learning via Learned Advantage Transformations".* Read their full paper here: https://proceedings.mlr.press/v193/kulkarni22a/kulkarni22a.pdf.
+
 1.  **AV:** Robustness
 2.  **RG:** Robustness to class imbalance
 3.  **UP:** Target variable confounders
