@@ -59,7 +59,7 @@ If you use this framework in your research, please cite the primary paper:
      url = {https://dl.acm.org/doi/full/10.1145/3613904.3642501}
    }
 
-If you utilize the **Visualizer Tool** or this **codebase** directly, please *also* cite this artifact:
+If you utilize the **visualizer tool** or this **codebase** directly, please *also* cite this artifact:
 
 .. code-block:: bibtex
 
