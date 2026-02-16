@@ -1,5 +1,5 @@
-Non-Ideal Methodological Framework for Responsible ML
-=====================================================
+Non-Ideal Methodological Framework for Responsible Machine Learning
+===================================================================
 
 |DOI| |Citation| |Visualizer|
 
