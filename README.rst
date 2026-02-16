@@ -44,9 +44,7 @@ This repository contains tools and guides to help you apply our framework to you
 Citation
 --------
 
-If you use this framework in your research, please cite the following paper:
-
-**BibTeX:**
+If you use this framework in your research, please cite the primary paper:
 
 .. code-block:: bibtex
 
@@ -61,8 +59,23 @@ If you use this framework in your research, please cite the following paper:
      url = {https://dl.acm.org/doi/full/10.1145/3613904.3642501}
    }
 
-**Text:**
-Mothilal, R. K., Guha, S., & Ahmed, S. I. (2024). Towards a Non-Ideal Methodological Framework for Responsible ML. *Proceedings of the 2024 CHI Conference on Human Factors in Computing Systems (CHI '24)*. https://doi.org/10.1145/3613904.3642501
+If you utilize the **Visualizer Tool** or this **codebase** directly, please *also* cite this artifact:
+
+.. code-block:: bibtex
+
+   @software{nonideal_rml_tool_2024,
+     author = {Mothilal, Ramaravind Kommiya and Guha, Shion and Ahmed, Syed Ishtiaque},
+     title  = {Non-Ideal Methodological Framework for Responsible Machine Learning},
+     year   = {2024},
+     publisher = {Zenodo},
+     doi    = {10.5281/zenodo.18651267},
+     url    = {https://doi.org/10.5281/zenodo.18651267}
+   }
+
+**Text Citation:**
+
+* **Paper:** Mothilal, R. K., Guha, S., & Ahmed, S. I. (2024). Towards a Non-Ideal Methodological Framework for Responsible ML. *Proceedings of the 2024 CHI Conference on Human Factors in Computing Systems (CHI '24)*. ACM. https://doi.org/10.1145/3613904.3642501
+* **Artifact:** Mothilal, R. K., Guha, S., & Ahmed, S. I. (2024). *Non-Ideal Methodological Framework for Responsible Machine Learning* [software]. Zenodo. https://doi.org/10.5281/zenodo.18651267
 
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.18651267.svg
    :target: https://doi.org/10.5281/zenodo.18651267
