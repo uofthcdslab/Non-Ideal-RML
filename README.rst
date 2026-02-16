@@ -73,5 +73,5 @@ Mothilal, R. K., Guha, S., & Ahmed, S. I. (2024). Towards a Non-Ideal Methodolog
    :alt: Citation
 
 .. |Visualizer| image:: https://img.shields.io/badge/Launch-Visualizer_Tool-7b2cbf?style=flat&logo=github
-   :target: https://[YOUR-USERNAME].github.io/[REPO-NAME]/
+   :target: https://uofthcdslab.github.io/Non-Ideal-RML/
    :alt: Launch Visualizer
